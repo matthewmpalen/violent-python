@@ -2,7 +2,6 @@ from argparse import ArgumentParser
 import socket
 import logging
 from threading import Thread
-import time
 
 logging.basicConfig(level=logging.WARNING, 
     filename='logs/vulnerable.py.log', filemode='w')
