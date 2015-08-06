@@ -18,8 +18,8 @@ def return_banner(ip, port):
         banner = s.recv(1024)
         s.close()
         return banner
-    except Exception as e:
-        logger.error('Banner request for {0}:{1}    {2}'.format(ip, port, e))
+    except socket.timeout as e:
+        logger.error('Banner request for {0}:{1} timed out'.format(ip, port))
         return None
 
 def get_vulnerable_banners():
