@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
+from concurrent.futures import ThreadPoolExecutor
 import socket
 import logging
-from threading import Thread
 
 logging.basicConfig(level=logging.WARNING, 
     filename='logs/vulnerable.py.log', filemode='w')
@@ -12,6 +12,9 @@ def get_ports():
         yield port
 
 def get_banner(ip, port):
+    """
+    Makes a blocking socket request for a banner.
+    """
     try:
         socket.setdefaulttimeout(2)
         s = socket.socket()
@@ -58,18 +61,18 @@ def banner_request(ip, port):
 
 def main():
     """
-    Spawns a thread for each blocking banner request.
+    Makes banner requests with a ThreadPoolExecutor.
     """
     arg_parser = ArgumentParser()
     arg_parser.add_argument('--ip', help='IP address')
     args = arg_parser.parse_args()
     ip = args.ip
 
+    executor = ThreadPoolExecutor(max_workers=10)
     for port in get_ports():
-        thread = Thread(target=banner_request, args=(ip, port))
-        thread.start()
+        executor.submit(banner_request, ip, port)
 
-    print('Finished spawning banner requests')
+    print('[!] Finished spawning banner requests')
 
 if __name__ == '__main__':
     main()
