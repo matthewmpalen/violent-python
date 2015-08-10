@@ -1,5 +1,7 @@
 from argparse import ArgumentParser
+from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import cpu_count
 import socket
 import logging
 
@@ -64,11 +66,19 @@ def main():
     Makes banner requests with a ThreadPoolExecutor.
     """
     arg_parser = ArgumentParser()
-    arg_parser.add_argument('--ip', help='IP address')
+    arg_parser.add_argument('--ip', help='IP address', required=True)
+    arg_parser.add_argument('--pool', help='Executor pool type', 
+        choices=('thread', 'process'), required=True)
     args = arg_parser.parse_args()
-    ip = args.ip
 
-    executor = ThreadPoolExecutor(max_workers=10)
+    ip = args.ip
+    pool = args.pool
+
+    if pool == 'process':
+        executor = ProcessPoolExecutor(max_workers=cpu_count())
+    elif pool == 'thread':
+        executor = ThreadPoolExecutor(max_workers=10)
+
     for port in get_ports():
         executor.submit(banner_request, ip, port)
 
