@@ -1,18 +1,18 @@
 from crypt import crypt
 import logging
-from itertools import permutations
+from itertools import product
 import string
 
 logging.basicConfig(level=logging.INFO, filename='logs/pw_decrypt.py.log', 
     filemode='w')
 logger = logging.getLogger(__name__)
 
-MAX_SALT_LENGTH = 2
+MAX_SALT_LENGTH = 3
 SALT_CHARS = string.digits + string.ascii_letters + './'
 
 def get_salts():
     for i in range(MAX_SALT_LENGTH):
-        results = permutations(SALT_CHARS, i)
+        results = product(SALT_CHARS, repeat=i)
         for r in results:
             yield ''.join(r)
 
