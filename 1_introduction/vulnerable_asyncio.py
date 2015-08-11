@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.WARNING,
 logger = logging.getLogger(__name__)
 
 def get_ports():
-    for port in range(1, 255):
+    for port in [21, 22, 25, 80, 110]:
         yield port
 
 @asyncio.coroutine
@@ -72,8 +72,10 @@ def main():
     ip = args.ip
 
     tasks = []
-    for port in get_ports():
-        tasks.append(asyncio.async(banner_request(ip, port)))
+    for i in range(1, 255):
+        for port in get_ports():
+            tasks.append(asyncio.async(banner_request('{0}.{1}'.format(ip, i), 
+                port)))
 
     loop = asyncio.get_event_loop()
     loop.run_until_complete(asyncio.wait(tasks))
