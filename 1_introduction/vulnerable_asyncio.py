@@ -72,7 +72,7 @@ def main():
     ip = args.ip
 
     tasks = []
-    for i in range(1, 255):
+    for i in range(1, 256):
         for port in get_ports():
             tasks.append(asyncio.async(banner_request('{0}.{1}'.format(ip, i), 
                 port)))

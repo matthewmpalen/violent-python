@@ -81,7 +81,7 @@ def main():
     elif pool == 'thread':
         executor = ThreadPoolExecutor(max_workers=workers)
 
-    for i in range(1, 255):
+    for i in range(1, 256):
         for port in get_ports():
             executor.submit(banner_request, '{0}.{1}'.format(ip, i), port)
 
