@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
-from multiprocessing import cpu_count
 import socket
 import logging
 
@@ -10,7 +9,7 @@ logging.basicConfig(level=logging.WARNING,
 logger = logging.getLogger(__name__)
 
 def get_ports():
-    for port in range(1, 255):
+    for port in [21, 22, 25, 80, 110]:
         yield port
 
 def get_banner(ip, port):
@@ -69,18 +68,22 @@ def main():
     arg_parser.add_argument('--ip', help='IP address', required=True)
     arg_parser.add_argument('--pool', help='Executor pool type', 
         choices=('thread', 'process'), required=True)
+    arg_parser.add_argument('--workers', help='Number of executor workers', 
+        type=int, choices=range(1, 9), required=True)
     args = arg_parser.parse_args()
 
     ip = args.ip
     pool = args.pool
+    workers = args.workers
 
     if pool == 'process':
-        executor = ProcessPoolExecutor(max_workers=cpu_count())
+        executor = ProcessPoolExecutor(max_workers=workers)
     elif pool == 'thread':
-        executor = ThreadPoolExecutor(max_workers=10)
+        executor = ThreadPoolExecutor(max_workers=workers)
 
-    for port in get_ports():
-        executor.submit(banner_request, ip, port)
+    for i in range(1, 255):
+        for port in get_ports():
+            executor.submit(banner_request, '{0}.{1}'.format(ip, i), port)
 
     print('[!] Finished spawning banner requests')
 
