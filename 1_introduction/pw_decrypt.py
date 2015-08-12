@@ -60,9 +60,11 @@ def main():
                 if found:
                     msg = '[+] Found password for {0}: {1}'.format(user, 
                         password)
+                    print(msg)
                     logger.info(msg)
                 else:
                     msg = '[-] Password not found for {0}'.format(user)
+                    print(msg)
                     logger.error(msg)
 
     print('[!] Finished')
