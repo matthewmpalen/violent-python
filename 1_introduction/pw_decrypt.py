@@ -20,11 +20,8 @@ def get_dictionary_words():
     with open('dictionary.txt', 'r') as f:
         return f.read().splitlines()
 
-DICTIONARY_WORDS = get_dictionary_words()
-
-def get_password(user, encrypted_pw, salt):
-    print('[?] Cracking password for {0} (encrypted_pw={1}, salt={2})'.format(
-        user, encrypted_pw, salt))
+def decrypt_password(encrypted_pw, salt):
+    print('[?] Cracking {0} (salt={1})'.format(encrypted_pw, salt))
 
     for word in DICTIONARY_WORDS:
         crypt_word = crypt(word, salt=salt)
@@ -33,6 +30,8 @@ def get_password(user, encrypted_pw, salt):
             return word
 
     return None
+
+DICTIONARY_WORDS = get_dictionary_words()
 
 def main():
     """
@@ -47,8 +46,12 @@ def main():
                 encrypted_pw = tokens[1].strip(' ')
                 found = False
 
+                msg = '[?] Cracking {0} password'.format(user)
+                print(msg)
+                logger.info(msg)
+
                 for salt in get_salts():
-                    password = get_password(user, encrypted_pw, salt)
+                    password = decrypt_password(encrypted_pw, salt)
 
                     if password:
                         found = True
@@ -57,11 +60,10 @@ def main():
                 if found:
                     msg = '[+] Found password for {0}: {1}'.format(user, 
                         password)
+                    logger.info(msg)
                 else:
                     msg = '[-] Password not found for {0}'.format(user)
-
-                print(msg)
-                logger.info(msg)
+                    logger.error(msg)
 
     print('[!] Finished')
 
